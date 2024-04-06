@@ -1,4 +1,3 @@
-import { Application } from "https://deno.land/x/oak@14.2.0/mod.ts";
 import * as fs from "https://deno.land/std@0.221.0/fs/mod.ts";
 import scrape from "./cheapwl-scrape.ts";
 
@@ -24,13 +23,15 @@ async function record() {
   return yoink();
 }
 
-const app = new Application();
-app.use(async (ctx) => {
+async function handler(_req: Request): Promise<Response> {
   let data = yoink();
-  if (Date.now() - data[0].timestamp >= 8.64e7 || data.length == 0) {
-    data = await record();
-  }
-  ctx.response.body = JSON.stringify(data);
+  if (data.length == 0) data = await record();
+  // if (data[-1].timestamp > 8.64e7) data = await record();
+  return new Response(JSON.stringify(data));
+}
+
+Deno.cron("Fetch WL", "0 0 * * *", async () => {
+  await record();
 });
 
-await app.listen({ port: 8000 });
+Deno.serve({ port: 8080 }, handler);
