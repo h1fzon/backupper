@@ -1,10 +1,7 @@
 import { ms } from "https://deno.land/x/ms@v0.1.0/ms.ts";
 import scrape from "./cheapwl_scrape.ts";
-import "https://deno.land/std@0.221.0/dotenv/load.ts";
 
-const kv = await Deno.openKv(
-  "https://api.deno.com/databases/eb9996bc-c5b3-4458-b640-58727f727b4c/connect"
-);
+const kv = await Deno.openKv();
 
 export async function record() {
   const data = await scrape();
