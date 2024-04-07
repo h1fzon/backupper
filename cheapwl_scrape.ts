@@ -1,6 +1,11 @@
 import * as ddom from "https://deno.land/x/deno_dom@v0.1.45/deno-dom-wasm.ts?doc=";
 
-export default async function cheapwl_scrape() {
+interface WLData {
+  sell_price: number;
+  buy_price: number;
+}
+
+export default async function cheapwl_scrape(): Promise<WLData> {
   const page = await fetch("https://cheapwl.com/");
   const document = new ddom.DOMParser().parseFromString(
     await page.text(),
