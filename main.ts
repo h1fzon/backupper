@@ -3,7 +3,7 @@ import NetAbstractor from "./abstractor_net.ts";
 
 const na = new NetAbstractor();
 
-Deno.cron("Fetch WL", "0 0 * * *", async () => {
+Deno.cron("Fetch WL", "0 */3 * * *", async () => {
   await kv_a.record();
 });
 
