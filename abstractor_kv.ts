@@ -12,24 +12,29 @@ export async function record() {
   return data;
 }
 
-export async function get_from_timeframe(time: string) {
+export async function get_from_timeframe(time = "all") {
   const arr = [];
 
   const entries = kv.list({ prefix: ["entry"] });
   for await (const entry of entries) {
+    if (time === "all") {
+      arr.push(entry);
+      continue;
+    }
     if (Date.now() - (entry.key[1] as number) <= (ms(time) as number)) {
       arr.push(entry);
     }
   }
-
   return Promise.all(arr);
 }
 
-export async function purge() {
+export async function purge(time = "all") {
   const entries = kv.list({ prefix: ["entry"] });
   for await (const entry of entries) {
-    if (Date.now() - (entry.key[1] as number) <= 4.32e8) {
-      await kv.delete(entry.key);
+    if (time && time !== "all") {
+      if (Date.now() - (entry.key[1] as number) > (ms(time) as number))
+        continue;
     }
+    await kv.delete(entry.key);
   }
 }
